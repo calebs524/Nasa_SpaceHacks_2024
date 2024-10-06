@@ -261,9 +261,28 @@ input {
   text-align: center;
 }
 
+/* Styling for the graph container */
+#windChart {
+  width: 100%;
+  height: 300px; /* Adjust height as needed */
+  margin-bottom: 20px;
+}
+
+/* Wind Forecast Day Cards */
+#windDay1, #windDay2, #windDay3 {
+  background-color: #e0f4e2; /* Light green for wind forecast cards */
+  padding: 20px;
+  margin-bottom: 20px;
+  border-radius: 10px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
   </style>
 </head>
 <body>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <header>
   <div class="welcome-message" id="welcomeMessage">Welcome, User</div>
@@ -277,7 +296,7 @@ input {
   <div class="tab active" data-tab="weather">Weather</div>
   <div class="tab" data-tab="water">Water Usage</div>
   <div class="tab" data-tab="wind">Wind</div>
-  <div class="tab" data-tab="soil">Soil Data</div>
+  <div class="tab" data-tab="humidityDewPoint">Humidity & Dew Point</div>
 </div>
 
 <!-- Main Content Area -->
@@ -285,82 +304,111 @@ input {
   <!-- Weather Section -->
   <div class="data-section active" id="weatherSection">
     <div class="dashboard-container">
-      <div class="data-card" id="weatherCard">
-        <h3>Weather Forecast</h3>
-        <div class="weather-forecast">
-          <div class="weather-day">
-            <h4>Mon</h4>
-            <span class="weather-icon">☀️</span>
-            <p>25°C</p>
-          </div>
-          <div class="weather-day">
-            <h4>Tue</h4>
-            <span class="weather-icon">☁️</span>
-            <p>22°C</p>
-          </div>
-          <div class="weather-day">
-            <h4>Wed</h4>
-            <span class="weather-icon">🌧️</span>
-            <p>20°C</p>
-          </div>
-          <div class="weather-day">
-            <h4>Thu</h4>
-            <span class="weather-icon">☀️</span>
-            <p>26°C</p>
-          </div>
-          <div class="weather-day">
-            <h4>Fri</h4>
-            <span class="weather-icon">🌦️</span>
-            <p>24°C</p>
-          </div>
-          <div class="weather-day">
-            <h4>Sat</h4>
-            <span class="weather-icon">☀️</span>
-            <p>28°C</p>
-          </div>
-          <div class="weather-day">
-            <h4>Sun</h4>
-            <span class="weather-icon">🌤️</span>
-            <p>27°C</p>
-          </div>
+      <!-- Line chart for 9-day temperature trends -->
+      <div class="data-card">
+        <h3>9-Day Temperature Forecast</h3>
+        <canvas id="tempChart"></canvas> <!-- Placeholder for the temperature graph -->
+      </div>
+
+      <!-- Cards for next 3 days' weather forecast -->
+      <div class="weather-forecast">
+        <div class="weather-day" id="day1">
+          <h4>Day 1</h4>
+          <span class="weather-icon">☀️</span>
+          <p>High: <span id="high1">--</span>°F</p>
+          <p>Low: <span id="low1">--</span>°F</p>
+          <p>Chance of Precipitation: <span id="precip1">--</span>%</p>
+        </div>
+        <div class="weather-day" id="day2">
+          <h4>Day 2</h4>
+          <span class="weather-icon">☁️</span>
+          <p>High: <span id="high2">--</span>°F</p>
+          <p>Low: <span id="low2">--</span>°F</p>
+          <p>Chance of Precipitation: <span id="precip2">--</span>%</p>
+        </div>
+        <div class="weather-day" id="day3">
+          <h4>Day 3</h4>
+          <span class="weather-icon">🌧️</span>
+          <p>High: <span id="high3">--</span>°F</p>
+          <p>Low: <span id="low3">--</span>°F</p>
+          <p>Chance of Precipitation: <span id="precip3">--</span>%</p>
         </div>
       </div>
     </div>
   </div>
 
+
+
   <!-- Water Section -->
   <div class="data-section" id="waterSection">
     <div class="dashboard-container">
+      <!-- Bar chart for 9-day evapotranspiration -->
       <div class="data-card">
-        <h3>Enter your Water Usage</h3>
-        <div class="input-wrapper">
-          <label for="waterInput">Water used today (Liters):</label>
-          <input type="number" id="waterInput" placeholder="Enter water used" />
-        </div>
-        <p>Average Water Usage: 250 Liters</p>
+        <h3>9-Day Evapotranspiration Forecast</h3>
+        <canvas id="etChart"></canvas> <!-- Placeholder for the ET bar chart -->
+      </div>
+
+      <!-- Irrigation Recommendation for tomorrow -->
+      <div class="data-card">
+        <h3>Irrigation Recommendation: Tomorrow</h3>
+        <p><strong>Evapotranspiration:</strong> <span id="etTomorrow">--</span> mm</p>
+        <p><strong>Recommended Irrigation:</strong> <span id="irrigationRecommendation">--</span> mm</p>
       </div>
     </div>
   </div>
+
 
   <!-- Wind Section -->
   <div class="data-section" id="windSection">
     <div class="dashboard-container">
       <div class="data-card">
-        <h3>Wind Speed</h3>
-        <p>Wind Speed: 15 km/h</p>
+        <h3>9-Day Wind Forecast</h3>
+        <!-- Container for Wind Speed Graph -->
+        <canvas id="windChart"></canvas> <!-- Placeholder for graph -->
+      </div>
+
+      <!-- Card for the next day's wind forecast -->
+      <div class="data-card">
+        <h3>Wind Forecast: Tomorrow</h3>
+        <p><strong>Day:</strong> October 6, 2024</p>
+        <p><strong>Wind Speed:</strong> 11.6 km/h</p>
+      </div>
+
+      <!-- More detailed cards for each day -->
+      <div class="data-card" id="windDay1">
+        <h4>Oct 5, 2024</h4>
+        <p>Wind Speed: 12.2 km/h</p>
+      </div>
+      <div class="data-card" id="windDay2">
+        <h4>Oct 6, 2024</h4>
+        <p>Wind Speed: 11.6 km/h</p>
+      </div>
+      <div class="data-card" id="windDay3">
+        <h4>Oct 7, 2024</h4>
+        <p>Wind Speed: 9.8 km/h</p>
+      </div>
+      <!-- Continue for all 9 days -->
+    </div>
+  </div>
+
+  <!-- Humidity and Dew Point Section (formerly Soil Data) -->
+  <div class="data-section" id="humidityDewPointSection">
+    <div class="dashboard-container">
+      <!-- Line chart for 9-day humidity and dew point trends -->
+      <div class="data-card">
+        <h3>9-Day Humidity and Dew Point Forecast</h3>
+        <canvas id="humidityDewPointChart"></canvas> <!-- Placeholder for the line graph -->
+      </div>
+
+      <!-- Detailed forecast for tomorrow -->
+      <div class="data-card">
+        <h3>Forecast: Tomorrow</h3>
+        <p><strong>Humidity:</strong> <span id="humidityTomorrow">--</span>%</p>
+        <p><strong>Dew Point:</strong> <span id="dewPointTomorrow">--</span>°F</p>
       </div>
     </div>
   </div>
 
-  <!-- Soil Section -->
-  <div class="data-section" id="soilSection">
-    <div class="dashboard-container">
-      <div class="data-card">
-        <h3>Soil Moisture</h3>
-        <p>Soil Moisture: 34%</p>
-      </div>
-    </div>
-  </div>
 </div>
 
 <!-- City/State Modal -->
@@ -638,6 +686,295 @@ input {
       document.getElementById(sectionId).classList.add('active');
     });
   });
+
+   // Data for the 9-day wind forecast (hardcoded for now)
+  const windData = [12.2, 11.6, 9.8, 7.9, 8.2, 8.4, 7.3, 6.5, 6.3]; // Wind speeds for 9 days
+  const windLabels = ["Oct 5", "Oct 6", "Oct 7", "Oct 8", "Oct 9", "Oct 10", "Oct 11", "Oct 12", "Oct 13"]; // Dates
+
+  // Create a chart for wind data
+  const ctx = document.getElementById('windChart').getContext('2d');
+  const windChart = new Chart(ctx, {
+    type: 'line', // Line chart for wind speed forecast
+    data: {
+      labels: windLabels, // Labels for the x-axis (dates)
+      datasets: [{
+        label: 'Wind Speed (km/h)',
+        data: windData,
+        borderColor: '#4CAF50', // Green line
+        backgroundColor: 'rgba(76, 175, 80, 0.2)', // Light green background
+        borderWidth: 2,
+        pointBackgroundColor: '#4CAF50', // Green points
+        fill: true, // Fill under the line
+        tension: 0.3 // Smooth curve
+      }]
+    },
+    options: {
+      responsive: true,
+      scales: {
+        y: {
+          beginAtZero: true, // Always start from 0
+          title: {
+            display: true,
+            text: 'Wind Speed (km/h)'
+          }
+        },
+        x: {
+          title: {
+            display: true,
+            text: 'Date'
+          }
+        }
+      },
+      plugins: {
+        tooltip: {
+          enabled: true, // Tooltip when hovering on points
+          callbacks: {
+            label: function(context) {
+              return `${context.parsed.y} km/h`;
+            }
+          }
+        }
+      }
+    }
+  });
+
+  // Dummy forecast data for temperature trends (9 days)
+const tempData = [64.6, 64.7, 64.6, 63.9, 62.7, 61.7, 60.9, 61.3, 64.3]; // Temperatures for 9 days
+const tempLabels = ["Oct 5", "Oct 6", "Oct 7", "Oct 8", "Oct 9", "Oct 10", "Oct 11", "Oct 12", "Oct 13"]; // Dates for the temperature chart
+
+// Create a chart for temperature data
+const tempCtx = document.getElementById('tempChart').getContext('2d');
+const tempChart = new Chart(tempCtx, {
+  type: 'line', // Line chart for temperature forecast
+  data: {
+    labels: tempLabels, // Labels for the x-axis (dates)
+    datasets: [{
+      label: 'Temperature (°F)',
+      data: tempData,
+      borderColor: '#FF5722', // Orange line
+      backgroundColor: 'rgba(255, 87, 34, 0.2)', // Light orange background
+      borderWidth: 2,
+      pointBackgroundColor: '#FF5722', // Orange points
+      fill: true, // Fill under the line
+      tension: 0.3 // Smooth curve
+    }]
+  },
+  options: {
+    responsive: true,
+    scales: {
+      y: {
+        beginAtZero: false, // Do not start from 0 for temperature
+        title: {
+          display: true,
+          text: 'Temperature (°F)'
+        }
+      },
+      x: {
+        title: {
+          display: true,
+          text: 'Date'
+        }
+      }
+    },
+    plugins: {
+      tooltip: {
+        enabled: true, // Tooltip when hovering on points
+        callbacks: {
+          label: function(context) {
+            return `${context.parsed.y} °F`;
+          }
+        }
+      }
+    }
+  }
+});
+
+// Ensure weather section is visible by default
+document.getElementById('weatherSection').classList.add('active');
+
+// Dummy forecast data for 3 days
+const weatherData = [
+  { day: 'Oct 6, 2024', high: 72.6, low: 63.3, precip: 15, condition: 'sunny' },
+  { day: 'Oct 7, 2024', high: 70.2, low: 62.5, precip: 30, condition: 'cloudy' },
+  { day: 'Oct 8, 2024', high: 65.8, low: 61.2, precip: 50, condition: 'rainy' }
+];
+
+// Function to map weather conditions to icons
+function getWeatherIcon(condition) {
+  switch (condition.toLowerCase()) {
+    case 'sunny': return '☀️';
+    case 'cloudy': return '☁️';
+    case 'rainy': return '🌧️';
+    case 'stormy': return '⛈️';
+    case 'snowy': return '❄️';
+    default: return '❓'; // Default icon for unknown conditions
+  }
+}
+
+// Function to update the weather cards
+function updateWeatherCards() {
+  weatherData.forEach((data, index) => {
+    const dayElement = document.getElementById(`day${index + 1}`);
+    const highElement = document.getElementById(`high${index + 1}`);
+    const lowElement = document.getElementById(`low${index + 1}`);
+    const precipElement = document.getElementById(`precip${index + 1}`);
+
+    // Update the text content with the weather data
+    dayElement.querySelector('h4').textContent = data.day;
+    dayElement.querySelector('.weather-icon').textContent = getWeatherIcon(data.condition);
+    highElement.textContent = data.high;
+    lowElement.textContent = data.low;
+    precipElement.textContent = data.precip;
+  });
+}
+
+// Call the function to load and update weather cards
+updateWeatherCards();
+
+// Dummy evapotranspiration data (in mm) for 9 days
+const etData = [2.41, 2.46, 2.49, 2.52, 2.58, 2.68, 2.83, 3.00, 3.14]; // ET values for 9 days
+const etLabels = ["Oct 5", "Oct 6", "Oct 7", "Oct 8", "Oct 9", "Oct 10", "Oct 11", "Oct 12", "Oct 13"]; // Dates
+
+// Create a bar chart for evapotranspiration data
+const etCtx = document.getElementById('etChart').getContext('2d');
+const etChart = new Chart(etCtx, {
+  type: 'bar', // Bar chart to show ET data
+  data: {
+    labels: etLabels, // Dates on x-axis
+    datasets: [{
+      label: 'Evapotranspiration (mm)',
+      data: etData,
+      backgroundColor: '#2196F3', // Blue bars
+      borderColor: '#1976D2', // Darker blue borders
+      borderWidth: 2
+    }]
+  },
+  options: {
+    responsive: true,
+    scales: {
+      y: {
+        beginAtZero: true, // Start y-axis from 0
+        title: {
+          display: true,
+          text: 'Evapotranspiration (mm)'
+        }
+      },
+      x: {
+        title: {
+          display: true,
+          text: 'Date'
+        }
+      }
+    },
+    plugins: {
+      tooltip: {
+        enabled: true, // Show tooltip on hover
+        callbacks: {
+          label: function(context) {
+            return `${context.parsed.y} mm`;
+          }
+        }
+      }
+    }
+  }
+});
+
+// Function to calculate and display irrigation recommendation for tomorrow
+function updateIrrigationRecommendation() {
+  const etTomorrow = etData[1]; // Assuming the second value in the array is for tomorrow
+  const irrigationNeeded = etTomorrow * 1.2; // A simple formula to recommend 120% of ET
+
+  // Update the UI with calculated values
+  document.getElementById('etTomorrow').textContent = etTomorrow.toFixed(2); // Display ET for tomorrow
+  document.getElementById('irrigationRecommendation').textContent = irrigationNeeded.toFixed(2); // Recommended irrigation
+}
+
+// Call the function to display the recommendation
+updateIrrigationRecommendation();
+
+
+// Dummy humidity and dew point data for 9 days
+const humidityData = [84.3, 82.5, 80.9, 79.1, 78.2, 76.6, 74.5, 72.2, 70.6]; // Humidity (%) for 9 days
+const dewPointData = [58.9, 60.4, 57.0, 56.4, 55.1, 53.5, 51.2, 49.4, 47.5]; // Dew point (°F) for 9 days
+const humidityDewPointLabels = ["Oct 5", "Oct 6", "Oct 7", "Oct 8", "Oct 9", "Oct 10", "Oct 11", "Oct 12", "Oct 13"]; // Dates
+
+// Create a line chart for humidity and dew point trends
+const humidityDewPointCtx = document.getElementById('humidityDewPointChart').getContext('2d');
+const humidityDewPointChart = new Chart(humidityDewPointCtx, {
+  type: 'line', // Line chart for both humidity and dew point
+  data: {
+    labels: humidityDewPointLabels, // Dates on x-axis
+    datasets: [
+      {
+        label: 'Humidity (%)',
+        data: humidityData,
+        borderColor: '#4CAF50', // Green line for humidity
+        backgroundColor: 'rgba(76, 175, 80, 0.2)', // Light green fill for humidity
+        borderWidth: 2,
+        pointBackgroundColor: '#4CAF50', // Green points for humidity
+        fill: true, // Fill under the line
+        tension: 0.3 // Smooth curve
+      },
+      {
+        label: 'Dew Point (°F)',
+        data: dewPointData,
+        borderColor: '#FF5722', // Orange line for dew point
+        backgroundColor: 'rgba(255, 87, 34, 0.2)', // Light orange fill for dew point
+        borderWidth: 2,
+        pointBackgroundColor: '#FF5722', // Orange points for dew point
+        fill: true, // Fill under the line
+        tension: 0.3 // Smooth curve
+      }
+    ]
+  },
+  options: {
+    responsive: true,
+    scales: {
+      y: {
+        beginAtZero: false, // Don't start from 0 as both values are above 40
+        title: {
+          display: true,
+          text: 'Percentage / Degrees Fahrenheit'
+        }
+      },
+      x: {
+        title: {
+          display: true,
+          text: 'Date'
+        }
+      }
+    },
+    plugins: {
+      tooltip: {
+        enabled: true, // Show tooltips on hover
+        callbacks: {
+          label: function(context) {
+            if (context.dataset.label === 'Humidity (%)') {
+              return `${context.parsed.y}% Humidity`;
+            } else {
+              return `${context.parsed.y}°F Dew Point`;
+            }
+          }
+        }
+      }
+    }
+  }
+});
+
+// Function to display tomorrow's forecast
+function updateHumidityDewPointTomorrow() {
+  const humidityTomorrow = humidityData[1]; // Assuming the second value is for tomorrow
+  const dewPointTomorrow = dewPointData[1]; // Assuming the second value is for tomorrow
+
+  // Update the UI with tomorrow's forecast
+  document.getElementById('humidityTomorrow').textContent = humidityTomorrow.toFixed(1); // Display tomorrow's humidity
+  document.getElementById('dewPointTomorrow').textContent = dewPointTomorrow.toFixed(1); // Display tomorrow's dew point
+}
+
+// Call the function to update tomorrow's forecast
+updateHumidityDewPointTomorrow();
+
+
 </script>
 
 <script type="module" src="firebase.js"></script>
