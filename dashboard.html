@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AccuCrops - Dashboard</title>
+  <style>
+    * {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f2f2f2;
+  padding: 20px;
+}
+
+
+header {
+  background-color: #4CAF50; /* Green accent */
+  color: white;
+  padding: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-radius: 10px;
+  margin-bottom: 20px;
+}
+
+.welcome-message {
+  font-size: 24px;
+  flex-grow: 1; /* Makes the welcome message take up the available space */
+}
+
+.location-button, .logout-button {
+  background-color: white;
+  color: #4CAF50; /* Green accent for buttons */
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+  margin-right: 15px; /* Adds space between the Location and Logout buttons */
+}
+
+.crops-button, .logout-button {
+  background-color: white;
+  color: #4CAF50; /* Green accent for buttons */
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+  margin-right: 15px; /* Adds space between the Location and Logout buttons */
+}
+
+.dashboard-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 20px;
+  padding: 20px;
+  background-color: #f2f2f2; /* Background */
+  border-radius: 15px;
+}
+
+.data-card {
+  background-color: #ffffff; /* White card with a slight shadow */
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+.data-card h3 {
+  font-size: 20px;
+  margin-bottom: 15px;
+  color: #333333; /* Dark neutral */
+}
+
+.data-card p {
+  font-size: 18px;
+  color: #666666; /* Lighter gray text */
+}
+
+.tabs {
+  display: flex;
+  justify-content: flex-start;
+  margin-bottom: 20px;
+  background-color: #e6e6e6; /* Light gray for the tabs background */
+  padding: 5px;
+  border-radius: 10px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  width: fit-content;
+}
+
+.tab {
+  color: #4CAF50; /* Green for active state */
+  padding: 10px 20px;
+  cursor: pointer;
+  border-radius: 5px;
+  transition: background-color 0.3s ease;
+  margin-right: 10px;
+}
+
+.tab:hover, .tab.active {
+  background-color: #4CAF50; /* Green active background */
+  color: white; /* White text on active tab */
+}
+
+.dashboard-content {
+  padding: 20px;
+  text-align: center;
+}
+
+.data-section {
+  display: none;
+}
+
+.data-section.active {
+  display: block;
+}
+
+/* Weather Forecast Styling */
+#weatherCard {
+  width: auto; /* Let the card adapt its width automatically */
+  max-width: none; /* Remove max-width constraints */
+  display: inline-block; /* Make the card size depend on its contents */
+  padding: 20px; /* Add padding around the content */
+  margin: 0 auto; /* Center the card */
+  background-color: #ffffff; /* White card */
+  border-radius: 10px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.weather-forecast {
+  display: grid;
+  grid-template-columns: repeat(7, auto); /* Allow the grid to size each column based on content */
+  gap: 10px;
+  justify-content: space-between; /* Distribute evenly across the grid */
+  margin-top: 20px;
+}
+
+.weather-day {
+  text-align: center;
+  padding: 10px;
+  background-color: #e0f4e2; /* Light green background for weather cards */
+  border-radius: 10px;
+}
+
+.weather-day h4 {
+  font-size: 14px;
+  margin-bottom: 5px;
+}
+
+.weather-icon {
+  font-size: 30px;
+  margin-bottom: 5px;
+}
+
+/* Modal styling */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-content {
+  background-color: #ffffff; /* White modal content */
+  margin: 5% auto;
+  padding: 30px;
+  border-radius: 10px;
+  width: 300px;
+  max-width: 90%;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+.close {
+  color: #aaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+  color: black;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.input-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 20px;
+  width: 100%;
+  position: relative;
+}
+
+input {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  width: 100%;
+  margin-bottom: 10px;
+  font-size: 16px;
+  box-sizing: border-box;
+}
+
+.btn {
+  padding: 10px;
+  background-color: #4CAF50; /* Green button */
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  border: 1px solid #ccc;
+  background-color: white;
+  z-index: 100;
+  list-style: none;
+  max-height: 150px;
+  overflow-y: auto;
+  display: none;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.dropdown li {
+  padding: 10px;
+  cursor: pointer;
+}
+
+.dropdown li:hover {
+  background-color: #f0f0f0;
+}
+
+.modal-link {
+  color: #4CAF50; /* Green link for switching modals */
+  cursor: pointer;
+  text-decoration: underline;
+  margin-top: 10px;
+  display: block;
+  text-align: center;
+}
+
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="welcome-message" id="welcomeMessage">Welcome, User</div>
+  <button class="crops-button" id="cropsButton">Crops</button>
+  <button class="location-button" id="locationButton">Location</button>
+  <button class="logout-button" id="logoutButton">Logout</button>
+</header>
+
+<!-- Tabs for switching views -->
+<div class="tabs">
+  <div class="tab active" data-tab="weather">Weather</div>
+  <div class="tab" data-tab="water">Water Usage</div>
+  <div class="tab" data-tab="wind">Wind</div>
+  <div class="tab" data-tab="soil">Soil Data</div>
+</div>
+
+<!-- Main Content Area -->
+<div class="dashboard-content">
+  <!-- Weather Section -->
+  <div class="data-section active" id="weatherSection">
+    <div class="dashboard-container">
+      <div class="data-card" id="weatherCard">
+        <h3>Weather Forecast</h3>
+        <div class="weather-forecast">
+          <div class="weather-day">
+            <h4>Mon</h4>
+            <span class="weather-icon">☀️</span>
+            <p>25°C</p>
+          </div>
+          <div class="weather-day">
+            <h4>Tue</h4>
+            <span class="weather-icon">☁️</span>
+            <p>22°C</p>
+          </div>
+          <div class="weather-day">
+            <h4>Wed</h4>
+            <span class="weather-icon">🌧️</span>
+            <p>20°C</p>
+          </div>
+          <div class="weather-day">
+            <h4>Thu</h4>
+            <span class="weather-icon">☀️</span>
+            <p>26°C</p>
+          </div>
+          <div class="weather-day">
+            <h4>Fri</h4>
+            <span class="weather-icon">🌦️</span>
+            <p>24°C</p>
+          </div>
+          <div class="weather-day">
+            <h4>Sat</h4>
+            <span class="weather-icon">☀️</span>
+            <p>28°C</p>
+          </div>
+          <div class="weather-day">
+            <h4>Sun</h4>
+            <span class="weather-icon">🌤️</span>
+            <p>27°C</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Water Section -->
+  <div class="data-section" id="waterSection">
+    <div class="dashboard-container">
+      <div class="data-card">
+        <h3>Enter your Water Usage</h3>
+        <div class="input-wrapper">
+          <label for="waterInput">Water used today (Liters):</label>
+          <input type="number" id="waterInput" placeholder="Enter water used" />
+        </div>
+        <p>Average Water Usage: 250 Liters</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Wind Section -->
+  <div class="data-section" id="windSection">
+    <div class="dashboard-container">
+      <div class="data-card">
+        <h3>Wind Speed</h3>
+        <p>Wind Speed: 15 km/h</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Soil Section -->
+  <div class="data-section" id="soilSection">
+    <div class="dashboard-container">
+      <div class="data-card">
+        <h3>Soil Moisture</h3>
+        <p>Soil Moisture: 34%</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- City/State Modal -->
+<div id="cityStateModal" class="modal" style="display: none;">
+  <div class="modal-content">
+    <span class="close" id="closeCityStateModal">&times;</span>
+    <h2>Select Location by City/State</h2>
+    <form id="editLocationForm">
+      <div class="input-wrapper">
+        <label for="newCity">City</label>
+        <input type="text" id="newCity" name="newCity" required autocomplete="off">
+        <ul id="cityList" class="dropdown"></ul> <!-- Dropdown for city suggestions -->
+      </div>
+      <div class="input-wrapper">
+        <label for="newState">State</label>
+        <input type="text" id="newState" name="newState" required autocomplete="off">
+        <ul id="stateList" class="dropdown"></ul> <!-- Dropdown for state suggestions -->
+      </div>
+      <button type="submit" class="btn">Update Location</button>
+    </form>
+    <span class="modal-link" id="switchToLatLong">Search by Lat/Long</span> <!-- Switch to Lat/Long modal -->
+  </div>
+</div>
+
+<!-- Latitude/Longitude Modal -->
+<div id="latLongModal" class="modal" style="display: none;">
+  <div class="modal-content">
+    <span class="close" id="closeLatLongModal">&times;</span>
+    <h2>Select Location by Latitude/Longitude</h2>
+    <form id="latLongForm">
+      <div class="input-wrapper">
+        <label for="latitude">Latitude</label>
+        <input type="text" id="latitude" name="latitude" required autocomplete="off">
+      </div>
+      <div class="input-wrapper">
+        <label for="longitude">Longitude</label>
+        <input type="text" id="longitude" name="longitude" required autocomplete="off">
+      </div>
+      <button type="submit" class="btn">Update Location</button>
+    </form>
+    <span class="modal-link" id="switchToCityState">Search by City/State</span> <!-- Switch back to City/State modal -->
+  </div>
+</div>
+
+<div id="cropsModal" class="modal" style="display: none;">
+  <div class="modal-content">
+    <span class="close" id="closeCropsModal">&times;</span>
+    <h2>Enter Crops</h2>
+    <form id="cropsForm">
+      <div class="input-wrapper">
+        <label for="cropInput">Enter a Crop:</label>
+        <input type="text" id="cropInput" placeholder="Enter crop" autocomplete="off">
+      </div>
+      <button type="button" class="btn" id="addCropBtn">Add Crop</button>
+      <div class="input-wrapper">
+        <label for="cropsList">Crops:</label>
+        <textarea id="cropsList" rows="4" readonly></textarea>
+      </div>
+      <button type="button" class="btn" id="submitCropsBtn">Submit</button>
+    </form>
+  </div>
+</div>
+
+
+<!-- JavaScript to handle modal and location functionality -->
+<script type="module" src="firebase.js"></script>
+
+<script type="module">
+  import { signOutUser } from './firebase.js';
+
+  document.addEventListener('DOMContentLoaded', function() {
+    const logoutButton = document.getElementById('logoutButton');
+
+    logoutButton.addEventListener('click', function() {
+      signOutUser();
+    });
+  });
+</script>
+<script>
+  const cropsButton = document.getElementById('cropsButton');
+  const cropsModal = document.getElementById('cropsModal');
+  const closeCropsModal = document.getElementById('closeCropsModal');
+  const cropInput = document.getElementById('cropInput');
+  const cropsList = document.getElementById('cropsList');
+  const addCropBtn = document.getElementById('addCropBtn');
+  const submitCropsBtn = document.getElementById('submitCropsBtn');
+  const locationButton = document.getElementById('locationButton');
+  const cityStateModal = document.getElementById('cityStateModal');
+  const latLongModal = document.getElementById('latLongModal');
+  const closeCityStateModal = document.getElementById('closeCityStateModal');
+  const closeLatLongModal = document.getElementById('closeLatLongModal');
+  const switchToLatLong = document.getElementById('switchToLatLong');
+  const switchToCityState = document.getElementById('switchToCityState');
+
+  let cropsArray = [];
+
+  cropsButton.addEventListener('click', () => {
+    cropsModal.style.display = 'flex';
+  });
+
+  // Close the crops modal when "x" is clicked
+  closeCropsModal.addEventListener('click', () => {
+    cropsModal.style.display = 'none';
+  });
+
+  // Add crop to the list when the "Add Crop" button is clicked
+  addCropBtn.addEventListener('click', () => {
+    const crop = cropInput.value.trim();
+    if (crop !== '') {
+      cropsArray.push(crop);
+      cropsList.value = cropsArray.join(', '); // Display the crops as a comma-separated string
+      cropInput.value = ''; // Clear the input field
+    }
+  });
+
+  // Close the modal when "Submit" is clicked
+  submitCropsBtn.addEventListener('click', () => {
+    alert(`Crops entered: ${cropsList.value}`);
+    cropsModal.style.display = 'none';
+    cropsArray = []; // Clear the array after submission
+    cropsList.value = ''; // Clear the textarea
+  });
+
+  window.onclick = function(event) {
+    if (event.target == cropsModal) {
+      cropsModal.style.display = 'none';
+    }
+    if (event.target == cityStateModal) {
+      cityStateModal.style.display = 'none';
+    }
+    if (event.target == latLongModal) {
+      latLongModal.style.display = 'none';
+    }
+};
+
+  locationButton.addEventListener('click', () => {
+    latLongModal.style.display = 'flex';
+  });
+
+  closeCityStateModal.addEventListener('click', () => {
+    cityStateModal.style.display = 'none';
+  });
+
+  closeLatLongModal.addEventListener('click', () => {
+    latLongModal.style.display = 'none';
+  });
+
+  // Switch to Lat/Long modal
+  switchToLatLong.addEventListener('click', () => {
+    cityStateModal.style.display = 'none';
+    latLongModal.style.display = 'flex';
+  });
+
+  // Switch to City/State modal
+  switchToCityState.addEventListener('click', () => {
+    latLongModal.style.display = 'none';
+    cityStateModal.style.display = 'flex';
+  });
+
+  // City and State Suggestion Logic
+  let cities = [];
+  let states = [];
+
+  const stateAbbreviations = {
+    "Alabama": "AL", "Alaska": "AK", "Arizona": "AZ", "Arkansas": "AR", "California": "CA",
+    "Colorado": "CO", "Connecticut": "CT", "Delaware": "DE", "Florida": "FL", "Georgia": "GA",
+    "Hawaii": "HI", "Idaho": "ID", "Illinois": "IL", "Indiana": "IN", "Iowa": "IA",
+    "Kansas": "KS", "Kentucky": "KY", "Louisiana": "LA", "Maine": "ME", "Maryland": "MD",
+    "Massachusetts": "MA", "Michigan": "MI", "Minnesota": "MN", "Mississippi": "MS",
+    "Missouri": "MO", "Montana": "MT", "Nebraska": "NE", "Nevada": "NV", "New Hampshire": "NH",
+    "New Jersey": "NJ", "New Mexico": "NM", "New York": "NY", "North Carolina": "NC",
+    "North Dakota": "ND", "Ohio": "OH", "Oklahoma": "OK", "Oregon": "OR", "Pennsylvania": "PA",
+    "Rhode Island": "RI", "South Carolina": "SC", "South Dakota": "SD", "Tennessee": "TN",
+    "Texas": "TX", "Utah": "UT", "Vermont": "VT", "Virginia": "VA", "Washington": "WA",
+    "West Virginia": "WV", "Wisconsin": "WI", "Wyoming": "WY"
+  };
+
+  // Fetch city and state data from a CSV file (Replace 'List of All U.S. Counties and Cities Spreadsheet_exported.csv')
+  fetch('List of All U.S. Counties and Cities Spreadsheet_exported.csv')
+    .then(response => response.text())
+    .then(data => {
+      let rows = data.split('\n').slice(1); // Skip the header row
+      rows.forEach(row => {
+        let cols = row.split(',');
+        let city = cols[0].trim().replace(/^"|"$/g, ''); // Remove quotes
+        let state = cols[5].trim().replace(/^"|"$/g, ''); // Remove quotes
+
+        cities.push({ name: city, state: state });
+        if (!states.includes(state)) {
+          states.push(state);
+        }
+      });
+    });
+
+  // Show city suggestions when Enter is pressed
+  document.getElementById('newCity').addEventListener('keydown', function (event) {
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      let input = this.value.toLowerCase();
+      let filteredCities = cities.filter(city => city.name.toLowerCase().startsWith(input));
+      if (filteredCities.length > 0) {
+        displaySuggestions(filteredCities, 'city');
+      } else {
+        hideSuggestions('city');
+      }
+    }
+  });
+
+  // Show state suggestions when Enter is pressed
+  document.getElementById('newState').addEventListener('keydown', function (event) {
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      let input = this.value.toLowerCase();
+      let filteredStates = states.filter(state => state.toLowerCase().startsWith(input));
+      if (filteredStates.length > 0) {
+        displaySuggestions(filteredStates, 'state');
+      } else {
+        hideSuggestions('state');
+      }
+    }
+  });
+
+  function displaySuggestions(filteredData, type) {
+    let list = type === 'city' ? document.getElementById('cityList') : document.getElementById('stateList');
+    list.innerHTML = '';
+
+    filteredData.forEach(item => {
+      let li = document.createElement('li');
+      if (type === 'city') {
+        let abbreviation = stateAbbreviations[item.state] || item.state;
+        li.textContent = `${item.name}, ${abbreviation}`;
+      } else {
+        li.textContent = item;
+      }
+
+      li.addEventListener('click', function () {
+        if (type === 'city') {
+          document.getElementById('newCity').value = item.name;
+          document.getElementById('newState').value = item.state;
+        } else {
+          document.getElementById('newState').value = item;
+        }
+        hideSuggestions(type);
+      });
+
+      list.appendChild(li);
+    });
+
+    list.style.display = 'block';
+  }
+
+  function hideSuggestions(type) {
+    let list = type === 'city' ? document.getElementById('cityList') : document.getElementById('stateList');
+    list.innerHTML = '';
+    list.style.display = 'none';
+  }
+
+  document.addEventListener('click', function (event) {
+    if (!event.target.closest('.input-wrapper')) {
+      hideSuggestions('city');
+      hideSuggestions('state');
+    }
+  });
+
+  // Handle tab switching
+  const tabs = document.querySelectorAll('.tab');
+  const sections = document.querySelectorAll('.data-section');
+
+  tabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      tabs.forEach(t => t.classList.remove('active'));
+      sections.forEach(s => s.classList.remove('active'));
+      tab.classList.add('active');
+      const sectionId = tab.dataset.tab + 'Section';
+      document.getElementById(sectionId).classList.add('active');
+    });
+  });
+</script>
+
+<script type="module" src="firebase.js"></script>
+
+</body>
+</html>
